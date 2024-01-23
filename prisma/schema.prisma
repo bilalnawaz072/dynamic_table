@@ -1,0 +1,56 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Table {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  columns     Column[]
+  rows        Row[]
+}
+
+model Column {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  dataType DataType
+  data     Json
+  tableId  String   @db.ObjectId
+  table    Table    @relation(fields: [tableId], references: [id])
+  rows     Row[]
+}
+
+model Row {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  data     Json
+  columnId String @db.ObjectId
+  column   Column @relation(fields: [columnId], references: [id])
+  tableId  String @db.ObjectId
+  table    Table  @relation(fields: [tableId], references: [id])
+}
+
+enum DataType {
+  Text
+  Number
+  Select
+  Multiselect
+  Status
+  Date 
+  Person
+  Files
+  Checkbox
+  Url
+  Email
+  Phone
+  Relation
+  CreatedAt
+  CreatedBy
+  UpdatedAt
+  UpdatedBy
+}
