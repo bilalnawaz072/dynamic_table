@@ -20,8 +20,7 @@ if (req.method === 'GET') {
       const newTable = await prisma.table.create({
         data: {
           name,
-          description,
-          
+          description
         },
       });
       res.status(201).json(newTable);

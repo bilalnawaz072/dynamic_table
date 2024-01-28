@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,30 +8,48 @@ datasource db {
 }
 
 model Table {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
-  columns     Column[]
-  rows        Row[]
+
+  slug String @default("")
+
+  columns Column[]
+  rows    Row[]
 }
 
 model Column {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
   dataType DataType
-  data     Json
-  tableId  String   @db.ObjectId
-  table    Table    @relation(fields: [tableId], references: [id])
-  rows     Row[]
+  data     Json    // defaultValue
+
+  tableId String @db.ObjectId
+  table   Table  @relation(fields: [tableId], references: [id])
+
+  fields Field[]
 }
 
 model Row {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  data     Json
-  columnId String @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  fields Field[]
+
+  tableId String @db.ObjectId
+  table   Table  @relation(fields: [tableId], references: [id])
+}
+
+model Field {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  data Json   // value
+
+  row   Row    @relation(fields: [rowId], references: [id])
+  rowId String @db.ObjectId
+
   column   Column @relation(fields: [columnId], references: [id])
-  tableId  String @db.ObjectId
-  table    Table  @relation(fields: [tableId], references: [id])
+  columnId String @db.ObjectId
 }
 
 enum DataType {
@@ -41,7 +58,7 @@ enum DataType {
   Select
   Multiselect
   Status
-  Date 
+  Date
   Person
   Files
   Checkbox
@@ -54,3 +71,4 @@ enum DataType {
   UpdatedAt
   UpdatedBy
 }
+
